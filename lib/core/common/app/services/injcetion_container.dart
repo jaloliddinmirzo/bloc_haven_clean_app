@@ -6,6 +6,7 @@ import 'package:haven_clean_app/features/auth/domain/usecases/login_usecase.dart
 import 'package:haven_clean_app/features/auth/domain/usecases/register_usecases.dart';
 import 'package:haven_clean_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:haven_clean_app/features/auth/presentation/controller/auth_provider.dart';
+import 'package:haven_clean_app/features/home/data/data_source/custom_dio_client.dart';
 import 'package:haven_clean_app/features/home/data/data_source/home_remote_data_source.dart';
 import 'package:haven_clean_app/features/home/data/repositors/home_repo_impl.dart';
 import 'package:haven_clean_app/features/home/domain/repositories/home_repo.dart';
@@ -33,6 +34,9 @@ Future<void> authInit() async {
     ..registerLazySingleton<LoginUsecase>(() => LoginUsecase(authRepo: getIt()))
     ..registerLazySingleton<RegisterUsecases>(
       () => RegisterUsecases(authRepo: getIt()),
+    )
+    ..registerLazySingleton<DioClient>(
+      () => DioClient(),
     )
     ..registerLazySingleton<AuthRepo>(
         () => AuthRepoImpl(authRemoteDataSource: getIt()))

@@ -3,6 +3,7 @@ import 'package:haven_clean_app/core/common/app/services/injcetion_container.dar
 import 'package:haven_clean_app/core/common/exeptions/custom_exception.dart';
 import 'package:haven_clean_app/core/utils/constants/network_constants.dart';
 import 'package:haven_clean_app/core/utils/constants/prefs_keys.dart';
+import 'package:haven_clean_app/features/home/data/data_source/custom_dio_client.dart';
 import 'package:haven_clean_app/features/home/data/models/banner_model.dart';
 import 'package:haven_clean_app/features/home/data/models/card_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,7 @@ abstract class HomeRemoteDataSource {
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
-  final dio = getIt<Dio>();
+  final dioClient = getIt<DioClient>();
 
   @override
   Future<BannerModel?> getBanners() async {
@@ -21,8 +22,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         getIt<SharedPreferences>().getString(PrefsKeys.tokenKey);
 
     try {
-      final response = await dio.get(NetworkConstants.bannerUrl,
-          options: Options(headers: {"Authorization": "Bearer $token"}));
+      final response = await dioClient.dio.get(NetworkConstants.bannerUrl,
+          options: Options(extra: {"requiresToken": true}));
       if (response.statusCode == 200) {
         final payload = response.data;
         return BannerModel.fromJson(payload);
@@ -41,7 +42,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     final String? token =
         getIt<SharedPreferences>().getString(PrefsKeys.tokenKey);
     try {
-      final response = await dio.get(NetworkConstants.cardUrl,
+      final response = await dioClient.dio.get(NetworkConstants.cardUrl,
           options: Options(headers: {"Authorization": "Bearer $token"}));
 
       if (response.statusCode == 200) {
